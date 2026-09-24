@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payment — Vijana Mental Hub</title>
+<meta name="description" content="Pay for a therapy session, event ticket, or make a donation to Vijana Mental Hub.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="payment">
+
+<div class="helpline-bar">
+  In crisis right now? Kenya Red Cross Emergency: <a href="tel:1199">1199</a> · Befrienders Kenya: <a href="tel:+254722178177">0722 178 177</a>
+</div>
+
+<header class="site-header">
+  <div class="container">
+    <a href="index.html" class="logo">
+      <img src="Untitled%20design%20%285%29.png" alt="Vijana Mental Hub" class="logo-image">
+      <span>Vijana Mental Hub</span>
+    </a>
+    <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="main-nav">
+      <a href="index.html">Home</a>
+      <a href="about.html">What We Do</a>
+      <a href="resources.html">Events</a>
+      <a href="events.html">Gatherings</a>
+      <a href="blog.html">Professional MeetUps</a>
+      <a href="get-involved.html">Theraphy Sessions</a>
+      <a href="community-chat.html">Chat</a>
+      <a href="video-calls.html">Video Calls</a>
+      <a href="payment.html" aria-current="page">Donate / Pay</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <section class="page-hero">
+    <div class="container">
+      <span class="kicker">Payment</span>
+      <h1>Support the Hub, or pay for a session</h1>
+      <p class="lead">Cover a therapy session fee, register for an event, or donate to keep Vijana Mental Hub free for youth who need it.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+
+      <div class="demo-banner">
+        <strong>Demo checkout.</strong> This page shows a working payment flow (M-Pesa STK-push style and card) for demonstration. No real money moves — connect it to a licensed gateway such as the M-Pesa Daraja API, Paystack, Flutterwave, or Stripe on your backend before taking live payments.
+      </div>
+
+      <div class="pay-wrap">
+
+        <div>
+          <form id="pay-form">
+            <div class="form-grid" style="max-width:none;">
+
+              <div>
+                <label for="purpose">What's this payment for?</label>
+                <select id="purpose">
+                  <option value="Donation">General donation</option>
+                  <option value="Theraphy Session">Theraphy session fee</option>
+                  <option value="Event Ticket">Event / workshop ticket</option>
+                  <option value="Sponsorship">Youth sponsorship</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="full-name">Full name</label>
+                <input id="full-name" type="text" placeholder="e.g. Amina Yusuf" required>
+              </div>
+
+              <div>
+                <label for="pay-email">Email</label>
+                <input id="pay-email" type="email" placeholder="you@example.com" required>
+              </div>
+
+              <div>
+                <label>Amount (KSh)</label>
+                <div class="amount-chips" id="amount-chips">
+                  <button type="button" class="amount-chip" data-amt="500">500</button>
+                  <button type="button" class="amount-chip" data-amt="1000">1,000</button>
+                  <button type="button" class="amount-chip" data-amt="2500">2,500</button>
+                  <button type="button" class="amount-chip" data-amt="5000">5,000</button>
+                </div>
+                <input id="amount" type="number" min="10" step="1" placeholder="Custom amount" required>
+              </div>
+
+              <div class="pay-tabs" role="tablist">
+                <button type="button" class="pay-tab" id="tab-mpesa" role="tab" aria-selected="true">M-Pesa</button>
+                <button type="button" class="pay-tab" id="tab-card" role="tab" aria-selected="false">Debit / Credit Card</button>
+              </div>
+
+              <div class="pay-panel active" id="panel-mpesa">
+                <div>
+                  <label for="mpesa-phone">M-Pesa phone number</label>
+                  <input id="mpesa-phone" type="tel" placeholder="07XX XXX XXX" inputmode="tel">
+                  <p class="form-note">You'll get an STK push prompt on your phone to enter your M-Pesa PIN.</p>
+                </div>
+              </div>
+
+              <div class="pay-panel" id="panel-card">
+                <div>
+                  <label for="card-number">Card number</label>
+                  <input id="card-number" type="text" placeholder="4242 4242 4242 4242" inputmode="numeric" maxlength="19">
+                </div>
+                <div class="row" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+                  <div>
+                    <label for="card-exp">Expiry (MM/YY)</label>
+                    <input id="card-exp" type="text" placeholder="09/28" maxlength="5">
+                  </div>
+                  <div>
+                    <label for="card-cvv">CVV</label>
+                    <input id="card-cvv" type="text" placeholder="123" inputmode="numeric" maxlength="4">
+                  </div>
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary" id="pay-submit">Pay now</button>
+              <p class="err" id="pay-err" style="color:#c23f5f;font-size:0.85rem;min-height:1em;"></p>
+            </div>
+          </form>
+
+          <div class="pay-status" id="pay-status"></div>
+        </div>
+
+        <aside class="pay-summary">
+          <h3>Order summary</h3>
+          <div class="row"><span>For</span><strong id="sum-purpose">General donation</strong></div>
+          <div class="row"><span>Method</span><strong id="sum-method">M-Pesa</strong></div>
+          <div class="row"><span>Amount</span><strong id="sum-amount">KSh 0</strong></div>
+          <div class="total">Total: <span id="sum-total">KSh 0</span></div>
+          <p class="pay-note">Payments help fund free counselling slots, peer support groups, and youth mental health events across Kenya. Thank you for showing up for someone.</p>
+        </aside>
+
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="logo"><img src="Untitled%20design%20%286%29.png" alt="Vijana Mental Hub" class="logo-image"><span>Vijana Mental Hub</span></div>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <ul class="footer-links">
+          <li><a href="about.html">What We Do</a></li>
+          <li><a href="resources.html">Events</a></li>
+          <li><a href="get-involved.html">Theraphy Sessions</a></li>
+          <li><a href="community-chat.html">Community Chat</a></li>
+          <li><a href="video-calls.html">Video Calls</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Involved</h4>
+        <ul class="footer-links">
+          <li><a href="payment.html">Donate / Pay</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Follow</h4>
+        <div class="social-row">
+          <a href="#" aria-label="Facebook">Fb</a>
+          <a href="#" aria-label="Instagram">Ig</a>
+          <a href="#" aria-label="Twitter / X">X</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Vijana Mental Hub · Built by Tech Shujaaz</span>
+      <span>Nairobi, Kenya</span>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var method = "mpesa";
+
+  function selectTab(which) {
+    method = which;
+    $("tab-mpesa").setAttribute("aria-selected", which === "mpesa" ? "true" : "false");
+    $("tab-card").setAttribute("aria-selected", which === "card" ? "true" : "false");
+    $("panel-mpesa").classList.toggle("active", which === "mpesa");
+    $("panel-card").classList.toggle("active", which === "card");
+    $("sum-method").textContent = which === "mpesa" ? "M-Pesa" : "Card";
+  }
+  $("tab-mpesa").onclick = function () { selectTab("mpesa"); };
+  $("tab-card").onclick = function () { selectTab("card"); };
+
+  $("purpose").addEventListener("change", function () {
+    $("sum-purpose").textContent = this.options[this.selectedIndex].text;
+  });
+
+  function setAmount(v) {
+    $("amount").value = v;
+    updateSummary();
+  }
+  document.querySelectorAll(".amount-chip").forEach(function (chip) {
+    chip.addEventListener("click", function () {
+      document.querySelectorAll(".amount-chip").forEach(function (c) { c.setAttribute("aria-pressed", "false"); });
+      chip.setAttribute("aria-pressed", "true");
+      setAmount(chip.dataset.amt);
+    });
+  });
+  $("amount").addEventListener("input", function () {
+    document.querySelectorAll(".amount-chip").forEach(function (c) { c.setAttribute("aria-pressed", "false"); });
+    updateSummary();
+  });
+
+  function money(n) { n = Number(n) || 0; return "KSh " + n.toLocaleString(); }
+  function updateSummary() {
+    var amt = $("amount").value || 0;
+    $("sum-amount").textContent = money(amt);
+    $("sum-total").textContent = money(amt);
+  }
+
+  // Light input formatting
+  $("card-number").addEventListener("input", function () {
+    this.value = this.value.replace(/\D/g, "").slice(0, 16).replace(/(.{4})/g, "$1 ").trim();
+  });
+  $("card-exp").addEventListener("input", function () {
+    var v = this.value.replace(/\D/g, "").slice(0, 4);
+    if (v.length > 2) v = v.slice(0, 2) + "/" + v.slice(2);
+    this.value = v;
+  });
+  $("card-cvv").addEventListener("input", function () {
+    this.value = this.value.replace(/\D/g, "").slice(0, 4);
+  });
+  $("mpesa-phone").addEventListener("input", function () {
+    this.value = this.value.replace(/[^\d+\s]/g, "");
+  });
+
+  var status = $("pay-status");
+  function showStatus(cls, html) {
+    status.className = "pay-status show " + cls;
+    status.innerHTML = html;
+  }
+
+  $("pay-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var err = $("pay-err");
+    err.textContent = "";
+    var name = $("full-name").value.trim();
+    var email = $("pay-email").value.trim();
+    var amount = Number($("amount").value);
+
+    if (!name || !email || !amount || amount < 10) {
+      err.textContent = "Please fill in your name, email and a valid amount.";
+      return;
+    }
+    if (method === "mpesa") {
+      var phone = $("mpesa-phone").value.trim();
+      if (!/^(\+?254|0)?7\d{8}$/.test(phone.replace(/\s/g, ""))) {
+        err.textContent = "Please enter a valid Safaricom M-Pesa number.";
+        return;
+      }
+    } else {
+      var num = $("card-number").value.replace(/\s/g, "");
+      if (num.length < 15 || !/^\d{2}\/\d{2}$/.test($("card-exp").value) || $("card-cvv").value.length < 3) {
+        err.textContent = "Please enter valid card details.";
+        return;
+      }
+    }
+
+    var submitBtn = $("pay-submit");
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Processing…";
+
+    if (method === "mpesa") {
+      showStatus("pending", "Sending STK push to your phone… please enter your M-Pesa PIN when prompted.");
+    } else {
+      showStatus("pending", "Contacting your card issuer for authorisation…");
+    }
+
+    setTimeout(function () {
+      var ref = "VMH-" + Math.random().toString(36).slice(2, 9).toUpperCase();
+      showStatus(
+        "success",
+        "✅ Payment received! Thank you, " + name.split(" ")[0] + ". Reference <strong>" + ref + "</strong> for " + money(amount) + " towards " + $("purpose").options[$("purpose").selectedIndex].text.toLowerCase() + ". A receipt has been queued for " + email + "."
+      );
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Pay now";
+      window.scrollTo({ top: status.getBoundingClientRect().top + window.scrollY - 100, behavior: "smooth" });
+    }, 1800);
+  });
+
+  updateSummary();
+})();
+</script>
+<script src="chatbot.js" defer></script>
+</body>
+</html>

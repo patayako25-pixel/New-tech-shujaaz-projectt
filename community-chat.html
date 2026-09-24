@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Community Chat — Vijana Mental Hub</title>
+<meta name="description" content="Chat with peers in the Vijana Mental Hub community space.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="chat">
+
+<div class="helpline-bar">
+  In crisis right now? Kenya Red Cross Emergency: <a href="tel:1199">1199</a> · Befrienders Kenya: <a href="tel:+254722178177">0722 178 177</a>
+</div>
+
+<header class="site-header">
+  <div class="container">
+    <a href="index.html" class="logo">
+      <img src="Untitled%20design%20%285%29.png" alt="Vijana Mental Hub" class="logo-image">
+      <span>Vijana Mental Hub</span>
+    </a>
+    <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="main-nav">
+      <a href="index.html">Home</a>
+      <a href="about.html">What We Do</a>
+      <a href="resources.html">Events</a>
+      <a href="events.html">Gatherings</a>
+      <a href="blog.html">Professional MeetUps</a>
+      <a href="get-involved.html">Theraphy Sessions</a>
+      <a href="community-chat.html" aria-current="page">Chat</a>
+      <a href="video-calls.html">Video Calls</a>
+      <a href="payment.html">Donate / Pay</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <section class="page-hero">
+    <div class="container">
+      <span class="kicker">Community</span>
+      <h1>General Chat</h1>
+      <p class="lead">A shared space to talk, ask questions, and support one another. Be kind, be honest, and look out for each other.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+
+      <div id="name-gate" class="chat-name-gate">
+        <h3>Join the conversation</h3>
+        <p>Pick a display name to enter the community chat room. No email or sign-up needed.</p>
+        <div class="form-grid" style="margin:0 auto;">
+          <input id="nickname" type="text" placeholder="e.g. Blue Sunflower" maxlength="24">
+          <button id="join-btn" class="btn btn-primary">Join chat</button>
+        </div>
+        <p class="form-note">This is a public demo chat stored on your device. Please don't share personal or identifying details.</p>
+      </div>
+
+      <div id="chat-room" class="chat-shell" style="display:none;">
+        <div class="chat-topbar">
+          <div><span class="who" id="me-label"></span></div>
+          <div class="chat-online" id="online-count">Live in this room</div>
+          <div>
+            <button class="btn-ghost" id="leave-btn" type="button">Leave</button>
+          </div>
+        </div>
+        <div class="chat-messages" id="chat-messages"></div>
+        <form class="chat-inputbar" id="chat-form">
+          <input id="chat-input" type="text" placeholder="Type a message…" autocomplete="off" maxlength="500">
+          <button type="submit" class="btn btn-primary">Send</button>
+        </form>
+      </div>
+
+      <p class="form-note" style="margin-top:18px;">
+        Need one-on-one support instead? Book a private <a href="get-involved.html">Theraphy Session</a> or start a <a href="video-calls.html">video/audio call</a>.
+      </p>
+
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="logo"><img src="Untitled%20design%20%286%29.png" alt="Vijana Mental Hub" class="logo-image"><span>Vijana Mental Hub</span></div>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <ul class="footer-links">
+          <li><a href="about.html">What We Do</a></li>
+          <li><a href="resources.html">Events</a></li>
+          <li><a href="get-involved.html">Theraphy Sessions</a></li>
+          <li><a href="video-calls.html">Video Calls</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Involved</h4>
+        <ul class="footer-links">
+          <li><a href="payment.html">Donate / Pay</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Follow</h4>
+        <div class="social-row">
+          <a href="#" aria-label="Facebook">Fb</a>
+          <a href="#" aria-label="Instagram">Ig</a>
+          <a href="#" aria-label="Twitter / X">X</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Vijana Mental Hub · Built by Tech Shujaaz</span>
+      <span>Nairobi, Kenya</span>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+<script>
+// Community chat — runs entirely client-side (localStorage + BroadcastChannel).
+// Messages sync live across tabs/windows on this device/browser. To make it
+// sync between *different* people's devices, connect this UI to a realtime
+// backend (e.g. Firebase, Supabase Realtime, or a small Socket.io server).
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var ROOM_KEY = "vmh_chat_messages";
+  var NAME_KEY = "vmh_chat_name";
+  var COLORS = ["#0F5257", "#D94F70", "#E8A33D", "#2AA36B", "#6B5CE7"];
+  var channel = ("BroadcastChannel" in window) ? new BroadcastChannel("vmh_chat") : null;
+
+  function colorFor(name) {
+    var h = 0;
+    for (var i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) % COLORS.length;
+    return COLORS[Math.abs(h) % COLORS.length];
+  }
+
+  function loadMessages() {
+    try { return JSON.parse(localStorage.getItem(ROOM_KEY) || "[]"); }
+    catch (e) { return []; }
+  }
+  function saveMessages(list) {
+    if (list.length > 200) list = list.slice(list.length - 200);
+    localStorage.setItem(ROOM_KEY, JSON.stringify(list));
+  }
+
+  var myName = localStorage.getItem(NAME_KEY) || "";
+
+  function escapeHtml(s) {
+    var d = document.createElement("div");
+    d.textContent = s;
+    return d.innerHTML;
+  }
+
+  function renderAll() {
+    var log = $("chat-messages");
+    log.innerHTML = "";
+    loadMessages().forEach(renderOne);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  function renderOne(m) {
+    var log = $("chat-messages");
+    var row = document.createElement("div");
+    if (m.sys) {
+      row.className = "chat-bubble sys";
+      row.textContent = m.text;
+    } else {
+      var mine = m.name === myName;
+      row.className = "chat-bubble " + (mine ? "me" : "them");
+      var time = new Date(m.t).toLocaleTimeString("en-KE", { hour: "numeric", minute: "2-digit" });
+      row.innerHTML = '<span class="meta" style="color:' + (mine ? "#CFE1DE" : colorFor(m.name)) + '">' +
+        escapeHtml(m.name) + " · " + time + "</span>" + escapeHtml(m.text);
+    }
+    log.appendChild(row);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  function postMessage(text, sys) {
+    var list = loadMessages();
+    var msg = { name: myName, text: text, t: Date.now(), sys: !!sys };
+    list.push(msg);
+    saveMessages(list);
+    renderOne(msg);
+    if (channel) channel.postMessage(msg);
+  }
+
+  function enterRoom() {
+    $("name-gate").style.display = "none";
+    $("chat-room").style.display = "grid";
+    $("me-label").textContent = "You're chatting as " + myName;
+    renderAll();
+    if (!loadMessages().length) {
+      postMessage("Welcome to Vijana Community Chat. Be kind, be respectful, and look out for one another.", true);
+    } else {
+      postMessage(myName + " joined the chat.", true);
+    }
+    $("chat-input").focus();
+  }
+
+  $("join-btn").addEventListener("click", function () {
+    var v = $("nickname").value.trim();
+    if (!v) { $("nickname").focus(); return; }
+    myName = v.slice(0, 24);
+    localStorage.setItem(NAME_KEY, myName);
+    enterRoom();
+  });
+  $("nickname").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") $("join-btn").click();
+  });
+
+  $("leave-btn").addEventListener("click", function () {
+    postMessage(myName + " left the chat.", true);
+    $("chat-room").style.display = "none";
+    $("name-gate").style.display = "block";
+  });
+
+  $("chat-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var input = $("chat-input");
+    var v = input.value.trim();
+    if (!v) return;
+    postMessage(v, false);
+    input.value = "";
+  });
+
+  if (channel) {
+    channel.onmessage = function (e) {
+      renderOne(e.data);
+    };
+  }
+  window.addEventListener("storage", function (e) {
+    if (e.key === ROOM_KEY) renderAll();
+  });
+
+  if (myName) {
+    $("nickname").value = myName;
+  }
+})();
+</script>
+<script src="chatbot.js" defer></script>
+</body>
+</html>
